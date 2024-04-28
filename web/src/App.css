@@ -1,12 +1,37 @@
 .App {
-  text-align: center;
+  text-align: left;
+  height: 40px;
+  
 }
 
 .App-logo {
   height: 40vmin;
   pointer-events: none;
 }
-
+.search{
+  margin-left: 309px;
+  margin-top: -21px;
+  cursor: pointer;
+}
+.capture{
+  margin-top: 200px;
+  /* margin-bottom: 200px; */
+  /* color: #61dafb; */
+  height: 30px;
+  background-color: aquamarine;
+  /* border-radius: 8px; */
+  padding: 4px;
+}
+.dots{
+  margin-top: -30px;
+  margin-left: 335px;
+  cursor: pointer;
+}
+.camera{
+  margin-left: 270px;
+  margin-top: -30px;
+  cursor: pointer;
+}
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 20s linear;
