@@ -1,7 +1,7 @@
 .App {
   text-align: left;
   height: 40px;
-  
+  position: fixed;
 }
 
 .App-logo {
@@ -9,7 +9,7 @@
   pointer-events: none;
 }
 .search{
-  margin-left: 309px;
+  margin-left: auto;
   margin-top: -21px;
   cursor: pointer;
 }
