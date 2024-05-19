@@ -1,5 +1,5 @@
-import React, { useRef, useState } from 'react';
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import React, { useRef, useState,useEffect } from 'react';
+import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
 import './App.css';
 import search from './Assets/search.svg';
 import camera from './Assets/camera.svg';
@@ -14,6 +14,8 @@ import Welcome from './Welcome';
 function App() {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
+  const navigate = useNavigate();
+  const [user, setUser] = useState(null);
   const [showCaptureButton, setShowCaptureButton] = useState(false);
   const [capturedImage, setCapturedImage] = useState(null);
  
@@ -61,10 +63,32 @@ function App() {
     // Set the captured image in state
     setCapturedImage(imageDataURL);
   };
-
+  useEffect(() => {
+    const jwt = localStorage.getItem('jwt');
+    if (jwt) {
+      fetch(`/checksession`, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('jwt')}`
+      },
+      })
+      .then(response => response.ok ? response.json() : Promise.reject('Failed to check session'))
+      .then(userData => {
+        setUser(userData);
+        
+       
+      })
+      .catch(error => {
+        console.error('Error checking session:', error);
+        localStorage.removeItem('jwt');  // Clear JWT as the session is no longer valid
+        setUser(null);  // Clear user state
+        navigate('/login');
+      });
+    }
+  }, [navigate]);
   return (
     <>
-    <div className="App bg-green-500 ">
+    {/* <div className="App bg-green-500 ">
         <h1 className="text-3l font-bold padding-top: 0.25rem text-gray-200">CHAT COMMUNITY</h1>
         
         <img className='search' src={search} alt='search'/>
@@ -72,7 +96,7 @@ function App() {
         <img className='dots' src={threeDots} alt='three dots'/>
 
         
-      </div>
+      </div> */}
       
 
 

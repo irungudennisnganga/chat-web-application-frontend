@@ -24,10 +24,17 @@ const Login = () => {
 
     try {
       const response = await axios.post('http://127.0.0.1:5555/login', formData);
-      setMessage(response.data.message);
+      setMessage(response);
+      
+      
+      // const data = await response.json();
+      // console.log()
+      // localStorage.setItem('jwt', response.d ata.access_token);
       navigate('/conversations');
     } catch (error) {
-      console.error('Error verifying OTP:', error);
+      // console.error('Error verifying OTP:', error);
+      setMessage({'status':422})
+      
     }
   };
 
@@ -62,6 +69,7 @@ const Login = () => {
           <span></span>
           Submit
         </button>
+        { message.status === 422  ?<h1 className='text-white mt-4 mb-4'>Wrong Credentials! Please try again</h1>: null}
       </form>
       <p>Don't have an account? <a href="signup" className="a2">Sign up!</a></p>
     </div>
