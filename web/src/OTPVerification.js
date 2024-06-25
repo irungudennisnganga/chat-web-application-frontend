@@ -1,78 +1,88 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import './OTPverification.css';
 import { useNavigate, useParams } from 'react-router-dom';
 
-
 const OTPVerification = () => {
-    const [otpDigits, setOTP] = useState(['', '', '', '', '', '']);
-    // const [phone, setPhone] = useState('');
-    const [message, setMessage] = useState('');
-    const navigate = useNavigate();
-    const { phoneNumber } = useParams();
+  const [otpDigits, setOTP] = useState(['', '', '', '', '', '']);
+  const [message, setMessage] = useState('');
+  const navigate = useNavigate();
+  const { phoneNumber } = useParams();
+  const inputRefs = useRef([]);
 
+  const handleChange = (index, value) => {
+    if (value.length > 1) {
+      value = value.slice(-1);
+    }
+    const newOTP = [...otpDigits];
+    newOTP[index] = value;
+    setOTP(newOTP);
 
-    const handleChange = (index, value) => {
-        const newOTP = [...otpDigits];
-        newOTP[index] = value;
-        setOTP(newOTP);
-    };
-console.log(phoneNumber)
-    const handleVerify = async () => {
-        const otp = otpDigits.join('');
-        console.log(otp);
-        try {
-            const response = await axios.post('http://127.0.0.1:5555/verify_otp', { phone_number: phoneNumber, otp });
-            setMessage(response.data.message);
-            navigate('/conversations')
-        } catch (error) {
-            console.error('Error verifying OTP:', error);
-        }
-    };
+    if (value !== '' && index < otpDigits.length - 1) {
+      inputRefs.current[index + 1].focus();
+    }
 
-    const handleClear = () => {
-        setOTP(['', '', '', '', '', '']);
-    };
+    if (index === otpDigits.length - 1 && newOTP.every(digit => digit !== '')) {
+      handleVerify(newOTP.join(''));
+    }
+  };
 
-    const renderInputs = () => {
-        return otpDigits.map((digit, index) => (
-            <input
-                key={index}
-                maxLength="1"
-                type="tel"
-                placeholder=""
-                value={digit}
-                onChange={(e) => handleChange(index, e.target.value)}
-                required
-            />
-        ));
-    };
+  const handleVerify = async (otp) => {
+    try {
+      const response = await axios.post('http://127.0.0.1:5555/verify_otp', { phone_number: phoneNumber, otp });
+      setMessage("Successfull");
+      navigate('/conversations');
+      
+    } catch (error) {
+      console.error('Error verifying OTP:', error);
+      setMessage('Error verifying OTP. Please try again.');
+    }
+  };
+  console.log(message)
+  const handleClear = () => {
+    setOTP(['', '', '', '', '', '']);
+    inputRefs.current[0].focus();
+  };
 
-    return (
-        <>
-            <form className="form">
-                <span className="close">X</span>
+  const renderInputs = () => {
+    return otpDigits.map((digit, index) => (
+      <input
+        key={index}
+        maxLength="1"
+        type="tel"
+        value={digit}
+        onChange={(e) => handleChange(index, e.target.value)}
+        ref={(el) => (inputRefs.current[index] = el)}
+        required
+      />
+    ));
+  };
 
-                <div className="info">
-                    <span className="title">Two-Factor Verification</span>
-                    <p className="description">
-                        Enter the two-factor authentication code from your email
-                    </p>
-                </div>
+  return (
+    <form className="form ml-auto mr-auto mt-16">
+      <span className="close">X</span>
 
-                <div className="input-fields">{renderInputs()}</div>
+      <div className="info">
+        <span className="title">Two-Factor Verification</span>
+        <p className="description">
+          Enter the two-factor authentication code from your email
+        </p>
+      </div>
 
-                <div className="action-btns">
-                    <button type="button" className="verify" onClick={handleVerify}>
-                        Verify
-                    </button>
-                    <button type="button" className="clear" onClick={handleClear}>
-                        Clear
-                    </button>
-                </div>
-            </form>
-        </>
-    );
+      <div className="input-fields">{renderInputs()}</div>
+
+      <div className="action-btns">
+        <button type="button" className="verify" onClick={() => handleVerify(otpDigits.join(''))}>
+          Verify
+        </button>
+        <button type="button" className="clear" onClick={handleClear}>
+          Clear
+        </button>
+      </div>
+
+      {message && <p className="message">{message}</p>}
+    </form>
+  );
 };
 
 export default OTPVerification;

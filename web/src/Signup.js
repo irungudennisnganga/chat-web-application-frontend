@@ -3,6 +3,8 @@ import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function Signup() {
   const { phoneNumber } = useParams();
@@ -10,10 +12,11 @@ function Signup() {
   const [formData, setFormData] = useState({
     username: '',
     password_1: '',
-    contact: '',
+    phone_number: '',
     email: '',
     password_2: ''
   });
+  const notify = () => toast("Login successful 👌");
   const [usernameValid, setUsernameValid] = useState(true);
   const [emailValid, setEmailValid] = useState(true);
   const [phoneValid, setPhoneValid] = useState(true);
@@ -33,9 +36,9 @@ function Signup() {
     setEmailValid(validateEmail(email));
   };
 
-  const handlePhoneChange = (phoneNumber) => {
-    setFormData({ ...formData, contact: phoneNumber });
-    setPhoneValid(!!phoneNumber);
+  const handlePhoneChange = (phone_number) => {
+    setFormData({ ...formData, phone_number });
+    setPhoneValid(!!phone_number);
   };
 
   const handlePassword1Change = (event) => {
@@ -51,7 +54,6 @@ function Signup() {
   };
 
   const validateEmail = (email) => {
-    // Basic email validation
     const re = /\S+@\S+\.\S+/;
     return re.test(email);
   };
@@ -73,35 +75,33 @@ function Signup() {
     }
 
     try {
-      const response = await axios.post(
-        'http://127.0.0.1:5555/create_account',
-        formData
-      );
+      const response = await axios.post('http://127.0.0.1:5555/create_account', formData);
+      console.log(response);
       setMessage(response.status);
-      navigate(`/otp-verification/${formData.contact}`);
+      // 55("Signup successful 👌");
+      notify()
+      navigate(`/otp-verification/${formData.phone_number}`);
     } catch (error) {
-      // console.error('Error verifying OTP:', error);
-      setMessage({ status: 400 });
+      console.error('Error during signup:', error);
+      setMessage('Signup failed. Please try again.');
     }
   };
 
   return (
     <div>
-      <div className="relative py-3 sm:max-w-xl sm:mx-auto">
+      <div className='big flex justify-evenly items-center mt-16 mb-3'>
+      <ToastContainer />
+      </div>
+      <div className="relative py-3 sm:max-w-xl sm:mx-auto mt-24">
         <div className="relative px-4 py-10 bg-black mx-8 md:mx-0 shadow rounded-3xl sm:p-10">
           <div className="max-w-md mx-auto text-white">
             <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div>
-                <label
-                  className="font-semibold text-sm text-gray-400 pb-1 block"
-                  htmlFor="username"
-                >
+                <label className="font-semibold text-sm text-gray-400 pb-1 block" htmlFor="username">
                   Username
                 </label>
                 <input
-                  className={`border rounded-lg px-3 py-2 mt-1 mb-5 text-sm w-full bg-gray-800 text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500 ${
-                    usernameValid ? '' : 'border-red-500'
-                  }`}
+                  className={`border rounded-lg px-3 py-2 mt-1 mb-5 text-sm w-full bg-gray-800 text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500 ${usernameValid ? '' : 'border-red-500'}`}
                   type="text"
                   id="username"
                   value={formData.username}
@@ -109,16 +109,11 @@ function Signup() {
                 />
               </div>
               <div>
-                <label
-                  className="font-semibold text-sm text-gray-400 pb-1 block"
-                  htmlFor="email"
-                >
+                <label className="font-semibold text-sm text-gray-400 pb-1 block" htmlFor="email">
                   Email
                 </label>
                 <input
-                  className={`border rounded-lg px-3 py-2 mt-1 mb-5 text-sm w-full bg-gray-800 text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500 ${
-                    emailValid ? '' : 'border-red-500'
-                  }`}
+                  className={`border rounded-lg px-3 py-2 mt-1 mb-5 text-sm w-full bg-gray-800 text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500 ${emailValid ? '' : 'border-red-500'}`}
                   type="email"
                   id="email"
                   value={formData.email}
@@ -126,37 +121,26 @@ function Signup() {
                 />
               </div>
               <div>
-                <label
-                  className="font-semibold text-sm text-gray-400 pb-1 block"
-                  htmlFor="phone_number"
-                >
+                <label className="font-semibold text-sm text-gray-400 pb-1 block" htmlFor="phone_number">
                   Phone Number
                 </label>
                 <PhoneInput
                   id="contact"
                   international
-                  className={`form-input mt-1 block ml-2 flex-none w-64 ${
-                    phoneValid ? '' : 'border-red-500'
-                  }`}
+                  className={`form-input mt-1 block ml-2 text-gray-400 flex-none w-64 ${phoneValid ? '' : 'border-red-500'}`}
                   defaultCountry="KE"
-                  limitMaxLength // Limit input to maximum length
+                  limitMaxLength
                   maxLength={15}
-                  // value={enteredPhoneNumber} // Display entered phone number
                   onChange={handlePhoneChange}
                 />
               </div>
               <br />
               <div>
-                <label
-                  className="font-semibold text-sm text-gray-400 pb-1 block"
-                  htmlFor="password"
-                >
+                <label className="font-semibold text-sm text-gray-400 pb-1 block" htmlFor="password">
                   Password
                 </label>
                 <input
-                  className={`border rounded-lg px-3 py-2 mt-1 mb-5 text-sm w-full bg-gray-800 text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500 ${
-                    password1Valid ? '' : 'border-red-500'
-                  }`}
+                  className={`border rounded-lg px-3 py-2 mt-1 mb-5 text-sm w-full bg-gray-800 text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500 ${password1Valid ? '' : 'border-red-500'}`}
                   type="password"
                   id="password"
                   value={formData.password_1}
@@ -164,16 +148,11 @@ function Signup() {
                 />
               </div>
               <div>
-                <label
-                  className="font-semibold text-sm text-gray-400 pb-1 block"
-                  htmlFor="confirm-password"
-                >
+                <label className="font-semibold text-sm text-gray-400 pb-1 block" htmlFor="confirm-password">
                   Confirm Password
                 </label>
                 <input
-                  className={`border rounded-lg px-3 py-2 mt-1 mb-5 text-sm w-full bg-gray-800 text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500 ${
-                    password2Valid ? '' : 'border-red-500'
-                  }`}
+                  className={`border rounded-lg px-3 py-2 mt-1 mb-5 text-sm w-full bg-gray-800 text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500 ${password2Valid ? '' : 'border-red-500'}`}
                   type="password"
                   id="confirm-password"
                   value={formData.password_2}
@@ -181,13 +160,12 @@ function Signup() {
                 />
               </div>
             </div>
-
             <div className="mt-5">
               <button
                 onClick={otp}
                 disabled={!isFormValid()}
                 className="py-2 px-4 bg-blue-600 hover:bg-blue-700 focus:ring-blue-500 focus:ring-offset-blue-200 text-white w-full transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 rounded-lg"
-                type="submit"
+                type="button"
               >
                 Sign up
               </button>
@@ -195,12 +173,12 @@ function Signup() {
             <div className="flex items-center justify-between mt-4">
               <span className="w-1/5 border-b dark:border-gray-600 md:w-1/4"></span>
               <a
-                className="text-xs text-gray-500 uppercase dark:text-gray-400 hover:underline"
+                className="text-xs text-gray-500 uppercase text-cyan-400 hover:underline"
                 href="login"
               >
                 have an account? Log in
               </a>
-              <span className="w-1/5 border-b dark:border-gray-600 md:w-1/4"></span>
+              <span className="w-1/5 border-b text md:w-1/4"></span>
             </div>
           </div>
         </div>

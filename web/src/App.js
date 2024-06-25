@@ -1,4 +1,4 @@
-import React, { useRef, useState,useEffect } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
 import './App.css';
 import search from './Assets/search.svg';
@@ -10,7 +10,6 @@ import Login from './Login';
 import Signup from './Signup';
 import Welcome from './Welcome';
 
-
 function App() {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
@@ -18,7 +17,6 @@ function App() {
   const [user, setUser] = useState(null);
   const [showCaptureButton, setShowCaptureButton] = useState(false);
   const [capturedImage, setCapturedImage] = useState(null);
- 
 
   const openCamera = async () => {
     try {
@@ -28,23 +26,23 @@ function App() {
       video.autoplay = true;
       setShowCaptureButton(true); // Show the capture button
       Swal.fire({
-        title: 'success!',
+        title: 'Success!',
         text: 'Do you want to continue?',
         icon: 'success',
         confirmButtonText: 'Cool'
-      })
+      });
     } catch (error) {
       // Add a notification for the user
       console.error('Error accessing the camera: ', error);
       Swal.fire({
-        title: 'errr!',
-        text: 'Could Not Open Camera!!',
+        title: 'Error!',
+        text: 'Could not open camera!',
         icon: 'error',
         confirmButtonText: 'Cool'
-      })
+      });
     }
   };
- 
+
   const captureImage = () => {
     const video = videoRef.current;
     const canvas = canvasRef.current;
@@ -63,32 +61,41 @@ function App() {
     // Set the captured image in state
     setCapturedImage(imageDataURL);
   };
+
   useEffect(() => {
     const jwt = localStorage.getItem('jwt');
+    // console.log(jwt)
     if (jwt) {
-      fetch(`/checksession`, {
+      fetch('http://127.0.0.1:5555/check_session', {
         method: 'GET',
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('jwt')}`
-      },
+          Authorization: `Bearer ${jwt}`
+        },
       })
-      .then(response => response.ok ? response.json() : Promise.reject('Failed to check session'))
-      .then(userData => {
-        setUser(userData);
-        
-       
-      })
-      .catch(error => {
-        console.error('Error checking session:', error);
-        localStorage.removeItem('jwt');  // Clear JWT as the session is no longer valid
-        setUser(null);  // Clear user state
-        navigate('/login');
-      });
+        .then(response => {
+          if (response.ok) {
+            return response.json();
+          } else {
+            
+            return response.text().then(text => { throw new Error(text) });
+          }
+        })
+        .then(userData => {
+          setUser(userData);
+        })
+        .catch(error => {
+          console.error('Error checking session:', error);
+          localStorage.removeItem('jwt');  // Clear JWT as the session is no longer valid
+          navigate('/login');
+          setUser(null);  // Clear user state
+          
+        });
     }
   }, [navigate]);
+
   return (
     <>
-    {/* <div className="App bg-green-500 ">
+      {/* <div className="App bg-green-500 ">
         <h1 className="text-3l font-bold padding-top: 0.25rem text-gray-200">CHAT COMMUNITY</h1>
         
         <img className='search' src={search} alt='search'/>
@@ -98,21 +105,14 @@ function App() {
         
       </div> */}
       
-
-
-
       <Routes>
-      
-      <Route exact path="/login" element={<Login />} />
-      
-        <Route path="/otp-verification/:phoneNumber"element={<OTPVerification />} />
-        <Route path="/signup" element={<Signup/>} />
+        <Route exact path="/login" element={<Login />} />
+        <Route path="/otp-verification/:phoneNumber" element={<OTPVerification />} />
+        <Route path="/signup" element={<Signup />} />
         <Route exact path="/" element={<Welcome />} />
-    </Routes>
+      </Routes>
     </>
-   
   );
 }
 
 export default App;
-

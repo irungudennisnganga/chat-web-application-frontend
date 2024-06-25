@@ -2,8 +2,12 @@ import React, { useState } from 'react';
 import './Login.css';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Login = () => {
+  const notify = () => toast("Login successful 👌");
+  const notify2 = () => toast("Login Request Not successful");
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -20,26 +24,42 @@ const Login = () => {
   };
 
   const handleLogin = async (e) => {
-    e.preventDefault(); // Prevent form submission
+    e.preventDefault();
 
     try {
-      const response = await axios.post('http://127.0.0.1:5555/login', formData);
-      setMessage(response);
-      
-      
-      // const data = await response.json();
-      // console.log()
-      // localStorage.setItem('jwt', response.d ata.access_token);
-      navigate('/conversations');
+      const response = await axios.post('http://127.0.0.1:5555/login', formData, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      console.log('Raw response:', response);
+      console.log('Response data:', response.data);
+
+      if (response.data && response.data.access_token) {
+        localStorage.removeItem('jwt'); 
+        const data =  response.data.access_token;
+        console.log(data)
+        localStorage.setItem('jwt', data);
+        notify();
+        setTimeout(() => {
+          navigate('/conversations');
+        }, 2000);  // Delay navigation to ensure the toast is visible
+      } else {
+        setMessage('Login failed. Please try again.');
+        
+      }
     } catch (error) {
-      // console.error('Error verifying OTP:', error);
-      setMessage({'status':422})
-      
+      console.error('Error during login:', error);
+      notify2();
+        
+      setMessage('Wrong Credentials! Please try again');
     }
   };
 
   return (
     <div className="login-box">
+      <ToastContainer />
       <p>Login</p>
       <form onSubmit={handleLogin}>
         <div className="user-box">
@@ -69,9 +89,9 @@ const Login = () => {
           <span></span>
           Submit
         </button>
-        { message.status === 422  ?<h1 className='text-white mt-4 mb-4'>Wrong Credentials! Please try again</h1>: null}
+        {message && <h1 className='text-white mt-4 mb-4'>{message}</h1>}
       </form>
-      <p>Don't have an account? <a href="signup" className="a2">Sign up!</a></p>
+      <p>Don't have an account? <a href="signup" className="a2 sign text-cyan-400">Sign up!</a></p>
     </div>
   );
 };
