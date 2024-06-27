@@ -16,7 +16,8 @@ function Signup() {
     email: '',
     password_2: ''
   });
-  const notify = () => toast("Login successful 👌");
+  const [image, setImage] = useState(null);
+  const notify = () => toast("Signup successful 👌");
   const [usernameValid, setUsernameValid] = useState(true);
   const [emailValid, setEmailValid] = useState(true);
   const [phoneValid, setPhoneValid] = useState(true);
@@ -34,6 +35,10 @@ function Signup() {
     const email = event.target.value;
     setFormData({ ...formData, email });
     setEmailValid(validateEmail(email));
+  };
+
+  const handleImageChange = (event) => {
+    setImage(event.target.files[0]);
   };
 
   const handlePhoneChange = (phone_number) => {
@@ -60,11 +65,12 @@ function Signup() {
 
   const isFormValid = () => {
     return (
-      usernameValid &&
-      emailValid &&
-      phoneValid &&
-      password1Valid &&
-      password2Valid
+      formData.username.trim() &&
+      validateEmail(formData.email) &&
+      formData.phone_number &&
+      formData.password_1 &&
+      formData.password_2 &&
+      formData.password_1 === formData.password_2
     );
   };
 
@@ -74,12 +80,25 @@ function Signup() {
       return;
     }
 
+    const data = new FormData();
+    data.append('username', formData.username);
+    data.append('password_1', formData.password_1);
+    data.append('phone_number', formData.phone_number);
+    data.append('email', formData.email);
+    data.append('password_2', formData.password_2);
+    if (image) {
+      data.append('image', image);
+    }
+
     try {
-      const response = await axios.post('http://127.0.0.1:5555/create_account', formData);
+      const response = await axios.post('http://127.0.0.1:5555/create_account', data, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
       console.log(response);
       setMessage(response.status);
-      // 55("Signup successful 👌");
-      notify()
+      notify();
       navigate(`/otp-verification/${formData.phone_number}`);
     } catch (error) {
       console.error('Error during signup:', error);
@@ -90,7 +109,7 @@ function Signup() {
   return (
     <div>
       <div className='big flex justify-evenly items-center mt-16 mb-3'>
-      <ToastContainer />
+        <ToastContainer />
       </div>
       <div className="relative py-3 sm:max-w-xl sm:mx-auto mt-24">
         <div className="relative px-4 py-10 bg-black mx-8 md:mx-0 shadow rounded-3xl sm:p-10">
@@ -102,6 +121,7 @@ function Signup() {
                 </label>
                 <input
                   className={`border rounded-lg px-3 py-2 mt-1 mb-5 text-sm w-full bg-gray-800 text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500 ${usernameValid ? '' : 'border-red-500'}`}
+                  required
                   type="text"
                   id="username"
                   value={formData.username}
@@ -114,6 +134,7 @@ function Signup() {
                 </label>
                 <input
                   className={`border rounded-lg px-3 py-2 mt-1 mb-5 text-sm w-full bg-gray-800 text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500 ${emailValid ? '' : 'border-red-500'}`}
+                  required
                   type="email"
                   id="email"
                   value={formData.email}
@@ -125,7 +146,8 @@ function Signup() {
                   Phone Number
                 </label>
                 <PhoneInput
-                  id="contact"
+                  id="phone_number"
+                  required
                   international
                   className={`form-input mt-1 block ml-2 text-gray-400 flex-none w-64 ${phoneValid ? '' : 'border-red-500'}`}
                   defaultCountry="KE"
@@ -141,6 +163,7 @@ function Signup() {
                 </label>
                 <input
                   className={`border rounded-lg px-3 py-2 mt-1 mb-5 text-sm w-full bg-gray-800 text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500 ${password1Valid ? '' : 'border-red-500'}`}
+                  required
                   type="password"
                   id="password"
                   value={formData.password_1}
@@ -153,10 +176,24 @@ function Signup() {
                 </label>
                 <input
                   className={`border rounded-lg px-3 py-2 mt-1 mb-5 text-sm w-full bg-gray-800 text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500 ${password2Valid ? '' : 'border-red-500'}`}
+                  required
                   type="password"
                   id="confirm-password"
                   value={formData.password_2}
                   onChange={handlePassword2Change}
+                />
+              </div>
+              <div>
+                <label className="font-semibold text-sm text-gray-400 pb-1 block" htmlFor="image">
+                  Profile Picture
+                </label>
+                <input
+                  className={`border rounded-lg px-3 py-2 mt-1 mb-5 text-sm w-full bg-gray-800 text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500`}
+                  required
+                  type="file"
+                  id="image"
+                  accept='image/*'
+                  onChange={handleImageChange}
                 />
               </div>
             </div>
@@ -176,7 +213,7 @@ function Signup() {
                 className="text-xs text-gray-500 uppercase text-cyan-400 hover:underline"
                 href="login"
               >
-                have an account? Log in
+                Have an account? Log in
               </a>
               <span className="w-1/5 border-b text md:w-1/4"></span>
             </div>

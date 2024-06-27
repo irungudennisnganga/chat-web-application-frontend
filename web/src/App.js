@@ -9,6 +9,7 @@ import OTPVerification from './OTPVerification';
 import Login from './Login';
 import Signup from './Signup';
 import Welcome from './Welcome';
+import Conversations from './Conversations';
 
 function App() {
   const videoRef = useRef(null);
@@ -109,6 +110,7 @@ function App() {
         <Route exact path="/login" element={<Login />} />
         <Route path="/otp-verification/:phoneNumber" element={<OTPVerification />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/conversations" element={<Conversations />} />
         <Route exact path="/" element={<Welcome />} />
       </Routes>
     </>
