@@ -60,7 +60,7 @@ const OTPVerification = () => {
   };
 
   return (
-    <form className="form ml-auto mr-auto mt-16">
+    <form className="form ml-auto mr-auto mt-16 h-screen">
       <span className="close">X</span>
 
       <div className="info">

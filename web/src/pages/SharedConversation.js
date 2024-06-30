@@ -141,7 +141,7 @@ function SharedConversation() {
   };
 
   return (
-    <div className={`mt-12 p-4 ${theme === 'light' ? 'bg-white' : theme === 'dark' ? 'bg-gray-900 text-white' : 'bg-blue-500 text-white'}`}>
+    <div className={`mt-12 p-4 h-screen ${theme === 'light' ? 'bg-white' : theme === 'dark' ? 'bg-gray-900 text-white' : 'bg-blue-500 text-white'}`}>
       <div className={`p-4 rounded-lg mb-4 overflow-y-auto ${theme === 'light' ? 'bg-gray-100' : theme === 'dark' ? 'bg-gray-900' : 'bg-indigo-400'}`}>
         {loading ? (
           <p className="text-center">Loading messages...</p>

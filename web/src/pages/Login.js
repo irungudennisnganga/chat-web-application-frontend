@@ -39,7 +39,7 @@ const Login = () => {
       if (response.data && response.data.access_token) {
         localStorage.removeItem('jwt'); 
         const data =  response.data.access_token;
-        console.log(data)
+        // console.log(data)
         localStorage.setItem('jwt', data);
         notify();
         setTimeout(() => {

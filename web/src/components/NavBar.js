@@ -2,10 +2,11 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { FaArrowLeft, FaArrowRight, FaSun, FaMoon, FaPalette } from 'react-icons/fa';
 import threeDots from '../Assets/three-dots-.svg';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const Navbar = ({ user: propUser }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
   const [user, setUser] = useState(null);
@@ -71,12 +72,15 @@ const Navbar = ({ user: propUser }) => {
     closeDropdown(); // Close dropdown after selecting theme
   };
 
-  if (!user) {
-    return (
-      <nav className="fixed top-0 left-0 right-0 bg-white shadow-md p-4 flex items-center justify-between">
-        <p className="text-lg font-semibold">Loading...</p>
-      </nav>
-    );
+  // Determine if Navbar should be displayed based on current location
+  const shouldDisplayNavbar = () => {
+    const currentPath = location.pathname;
+    return !(currentPath === '/login' || currentPath === '/signup' || currentPath.startsWith('/otp-verification') || currentPath === '/' );
+  };
+
+  if (!user || !shouldDisplayNavbar()) {
+    
+    return null; // Return null if user is not loaded or Navbar should not be displayed
   }
 
   return (

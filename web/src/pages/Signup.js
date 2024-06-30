@@ -23,6 +23,7 @@ function Signup() {
   const [phoneValid, setPhoneValid] = useState(true);
   const [password1Valid, setPassword1Valid] = useState(true);
   const [password2Valid, setPassword2Valid] = useState(true);
+  const [isLoading, setIsLoading] = useState(false); // State for loading indicator
   const navigate = useNavigate();
 
   const handleUserNameChange = (event) => {
@@ -80,6 +81,8 @@ function Signup() {
       return;
     }
 
+    setIsLoading(true); // Start loading indicator
+
     const data = new FormData();
     data.append('username', formData.username);
     data.append('password_1', formData.password_1);
@@ -96,13 +99,14 @@ function Signup() {
           'Content-Type': 'multipart/form-data'
         }
       });
-      // console.log(response);
       setMessage(response.status);
       notify();
       navigate(`/otp-verification/${formData.phone_number}`);
     } catch (error) {
       console.error('Error during signup:', error);
       setMessage('Signup failed. Please try again.');
+    } finally {
+      setIsLoading(false); // Stop loading indicator regardless of success or failure
     }
   };
 
@@ -200,11 +204,11 @@ function Signup() {
             <div className="mt-5">
               <button
                 onClick={otp}
-                disabled={!isFormValid()}
+                disabled={!isFormValid() || isLoading} 
                 className="py-2 px-4 bg-blue-600 hover:bg-blue-700 focus:ring-blue-500 focus:ring-offset-blue-200 text-white w-full transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 rounded-lg"
                 type="button"
               >
-                Sign up
+                {isLoading ? 'Signing up...' : 'Sign up'} {/* Show loading text if loading */}
               </button>
             </div>
             <div className="flex items-center justify-between mt-4">
