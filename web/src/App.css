@@ -3,6 +3,21 @@
   height: 40px;
   position: fixed;
 }
+body.light {
+  background-color: white;
+  color: black;
+}
+
+body.dark {
+  background-color: #1a202c; /* or any other dark color */
+  color: white;
+}
+
+body.blue {
+  background-color: #007bff; /* or any other blue color */
+  color: white;
+}
+
 .sign{
   text-decoration: underline;
 }

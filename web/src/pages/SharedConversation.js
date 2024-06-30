@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import socketIOClient from 'socket.io-client';
 import { useParams } from 'react-router-dom';
+import { useTheme } from './ThemeContext';
 
 const ENDPOINT = 'http://localhost:5555'; // Your Flask-SocketIO server endpoint
 
@@ -10,6 +11,7 @@ function SharedConversation() {
   const [newMessage, setNewMessage] = useState('');
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
+  const  theme  = localStorage.getItem('theme') // Use the theme context
 
   useEffect(() => {
     const jwt = localStorage.getItem('jwt');
@@ -128,6 +130,7 @@ function SharedConversation() {
             timestamp: new Date(data.timestamp.replace(' ', 'T').replace(/ /g, 'T')) // Ensure ISO 8601 format
           };
           setMessages(prevMessages => [...prevMessages, formattedMessage]);
+          fetchMessages()
         } else {
           console.error('Received message with undefined or null timestamp:', data);
         }
@@ -138,8 +141,8 @@ function SharedConversation() {
   };
 
   return (
-    <div className='mt-12 p-4'>
-      <div className="bg-gray-100 p-4 rounded-lg mb-4 overflow-y-auto">
+    <div className={`mt-12 p-4 ${theme === 'light' ? 'bg-white' : theme === 'dark' ? 'bg-gray-900 text-white' : 'bg-blue-500 text-white'}`}>
+      <div className={`p-4 rounded-lg mb-4 overflow-y-auto ${theme === 'light' ? 'bg-gray-100' : theme === 'dark' ? 'bg-gray-900' : 'bg-indigo-400'}`}>
         {loading ? (
           <p className="text-center">Loading messages...</p>
         ) : messages.length === 0 ? (
@@ -147,9 +150,9 @@ function SharedConversation() {
         ) : (
           messages.map(message => (
             <div key={message.id} className={`flex mb-2 ${message.sender.id === user?.user_id ? 'justify-end' : 'justify-start'}`}>
-              <div className={`p-2 rounded ${message.sender.id === user?.user_id ? 'bg-blue-200' : 'bg-gray-200'}`}>
+              <div className={`p-2 rounded ${message.sender.id === user?.user_id ? (theme === 'light' ? 'bg-blue-200' : theme === 'dark' ? 'bg-blue-700' : 'bg-green-400') : (theme === 'light' ? 'bg-gray-200' : theme === 'dark' ? 'bg-gray-700' : 'bg-blue-400')}`}>
                 <p>{message.content}</p>
-                <span className="text-xs text-gray-500">{new Date(message.timestamp).toLocaleString()}</span>
+                <span className={`text-xs ${theme === 'light' ? 'text-gray-500' : theme === 'dark' ? 'text-gray-300' : 'text-white'}`}>{new Date(message.timestamp).toLocaleString()}</span>
               </div>
             </div>
           ))
@@ -161,11 +164,11 @@ function SharedConversation() {
           value={newMessage}
           onChange={e => setNewMessage(e.target.value)}
           placeholder="Type your message here..."
-          className="flex-grow p-2 border rounded"
+          className={`flex-grow p-2 border rounded ${theme === 'light' ? 'bg-white' : theme === 'dark' ? 'bg-gray-700 text-white' : 'bg-blue-300 text-white'}`}
         />
         <button 
           onClick={handleSendMessage}
-          className="bg-blue-500 text-white p-2 rounded"
+          className={`p-2 rounded font-bold ${theme === 'light' ? 'bg-blue-500 text-white' : theme === 'dark' ? 'bg-blue-700 text-white' : 'bg-blue-400 text-white'}`}
         >
           Send
         </button>

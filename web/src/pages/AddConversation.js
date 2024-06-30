@@ -1,22 +1,19 @@
-import React from 'react';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ReactTyped } from "react-typed";
 
-function AddConversation({user}) {
-  // console.log(user.user_id)
+function AddConversation({ user }) {
   const [users, setUsers] = useState([]);
   const navigate = useNavigate();
   const token = localStorage.getItem('jwt');
+  const theme = localStorage.getItem('theme') || 'light'; // Fetch theme from local storage
 
   useEffect(() => {
-     // Retrieve the JWT token from local storage
-
     fetch('http://127.0.0.1:5555/users', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}` // Include the JWT token in the headers
+        'Authorization': `Bearer ${token}`
       }
     })
       .then(response => response.json())
@@ -29,50 +26,50 @@ function AddConversation({user}) {
       })
       .catch(error => console.error('Fetch error:', error));
   }, []);
-  
-  // console.log(user_2)
+
   const startConversation = (userId) => {
-    fetch(`http://127.0.0.1:5555/new_conversation/${userId}` , {
+    // console.log(userId)
+    fetch(`http://127.0.0.1:5555/new_conversation/${userId.id}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}` // Include the JWT token in the headers
+        'Authorization': `Bearer ${token}`
       }
     })
-    .then(response => response.json())
-    .then(data => {
-      if (data.status === 201 || data.status === 200) {
-        // console.log(data.connection_id)
-        navigate(`/conversations/${data.connection_id}`);
-        // setConversation(data.connection_id);
-      } else {
-        console.error('Error fetching users:', data.message);
-      }
-    })
-    .catch(error => console.error('Fetch error:', error));
-    
+      .then(response => response.json())
+      .then(data => {
+        if (data.status === 201 || data.status === 200) {
+          if(userId){
+            localStorage.setItem('user', JSON.stringify(userId))
+        }
+
+          navigate(`/conversations/${data.connection_id}`);
+        } else {
+          console.error('Error starting conversation:', data.message);
+        }
+      })
+      .catch(error => console.error('Fetch error:', error));
   };
 
   return (
     <div className="container mx-auto p-4 mt-12">
       <h1 className="text-2xl font-bold mb-4">
-        <ReactTyped 
-        className="p-2 text-xl font-bold  inline-block text-cyan-500" 
-        strings={[
-          "Start New Conversations",
-          
-        ]} 
-        showCursor={false} 
-        typeSpeed={40} 
-        backSpeed={50} 
-         
-      /></h1>
+        <ReactTyped
+          className={`p-2 text-xl font-bold inline-block ${theme === 'light' ? 'text-cyan-500' : theme === 'dark' ? 'text-yellow-500' : 'text-yellow-500'}`}
+          strings={[
+            "Start New Conversations"
+          ]}
+          showCursor={false}
+          typeSpeed={40}
+          backSpeed={50}
+        />
+      </h1>
       <ul className="space-y-2">
         {users.map(user => (
           <li
             key={user.id}
-            className="p-4 border rounded-lg cursor-pointer hover:bg-gray-100"
-            onClick={() => startConversation(user.id)}
+            className={`p-4 border rounded-lg cursor-pointer  ${theme === 'light' ? 'text-black hover:bg-gray-100' : theme === 'dark' ? 'text-white hover:bg-green-100 hover:text-black' : 'text-white hover:bg-green-100 hover:text-black'}`}
+            onClick={() => startConversation(user)}
           >
             <div className="flex items-center">
               <img
@@ -82,7 +79,7 @@ function AddConversation({user}) {
               />
               <div>
                 <p className="text-lg font-semibold">{user.username}</p>
-                <p className="text-sm text-gray-500">{user.email}</p>
+                <p className="text-sm text-white-500">{user.email}</p>
               </div>
             </div>
           </li>
