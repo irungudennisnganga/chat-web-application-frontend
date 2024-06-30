@@ -5,11 +5,14 @@ import search from './Assets/search.svg';
 import camera from './Assets/camera.svg';
 import threeDots from './Assets/three-dots-.svg';
 import Swal from 'sweetalert2';
-import OTPVerification from './OTPVerification';
-import Login from './Login';
-import Signup from './Signup';
-import Welcome from './Welcome';
-import Conversations from './Conversations';
+import OTPVerification from './pages/OTPVerification';
+import Login from './pages/Login';
+import Signup from './pages/Signup';
+import Welcome from './pages/Welcome';
+import Conversations from './pages/Conversations';
+import AddConversation from './pages/AddConversation';
+import SharedConversation from './pages/SharedConversation';
+import NavBar from './components/NavBar';
 
 function App() {
   const videoRef = useRef(null);
@@ -75,6 +78,7 @@ function App() {
       })
         .then(response => {
           if (response.ok) {
+            // console.log(response)
             return response.json();
           } else {
             
@@ -93,7 +97,7 @@ function App() {
         });
     }
   }, [navigate]);
-
+  // console.log(user)
   return (
     <>
       {/* <div className="App bg-green-500 ">
@@ -105,12 +109,15 @@ function App() {
 
         
       </div> */}
-      
+      {user ?  <NavBar  user={user}/>:null}
+     console.log()
       <Routes>
         <Route exact path="/login" element={<Login />} />
         <Route path="/otp-verification/:phoneNumber" element={<OTPVerification />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/conversations" element={<Conversations />} />
+        <Route path="/conversations" element={<Conversations user={user} />} />
+        <Route path="/add-conversations" element={<AddConversation user={user} />} />
+        <Route path="/conversations/:id" element={<SharedConversation users={user} />} />
         <Route exact path="/" element={<Welcome />} />
       </Routes>
     </>

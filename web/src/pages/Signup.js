@@ -96,7 +96,7 @@ function Signup() {
           'Content-Type': 'multipart/form-data'
         }
       });
-      console.log(response);
+      // console.log(response);
       setMessage(response.status);
       notify();
       navigate(`/otp-verification/${formData.phone_number}`);

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import axios from 'axios';
 import './OTPverification.css';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -30,15 +30,16 @@ const OTPVerification = () => {
   const handleVerify = async (otp) => {
     try {
       const response = await axios.post('http://127.0.0.1:5555/verify_otp', { phone_number: phoneNumber, otp });
+      // check the response status before navigating
       setMessage("Successfull");
-      navigate('/conversations');
+      navigate('/login');
       
     } catch (error) {
       console.error('Error verifying OTP:', error);
       setMessage('Error verifying OTP. Please try again.');
     }
   };
-  console.log(message)
+//   console.log(message)
   const handleClear = () => {
     setOTP(['', '', '', '', '', '']);
     inputRefs.current[0].focus();

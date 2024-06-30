@@ -1,5 +1,5 @@
 import React from 'react';
-import aiImage from './Assets/web.jpg';
+import aiImage from '../Assets/web.jpg';
 import { useNavigate } from 'react-router-dom';
 import { ReactTyped } from "react-typed";
 
