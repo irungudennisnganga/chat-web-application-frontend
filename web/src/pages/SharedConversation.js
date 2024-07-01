@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import socketIOClient from 'socket.io-client';
 import { useParams } from 'react-router-dom';
-import { useTheme } from './ThemeContext';
 
 const ENDPOINT = 'http://localhost:5555'; // Your Flask-SocketIO server endpoint
 
@@ -11,7 +10,7 @@ function SharedConversation() {
   const [newMessage, setNewMessage] = useState('');
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
-  const  theme  = localStorage.getItem('theme') // Use the theme context
+  const theme = localStorage.getItem('theme'); // Use the theme context
 
   useEffect(() => {
     const jwt = localStorage.getItem('jwt');
@@ -40,6 +39,14 @@ function SharedConversation() {
         });
     }
   }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchMessages();
+    }, 1000);
+
+    return () => clearInterval(interval); // Cleanup interval on component unmount
+  }, [conversationId]);
 
   const connectToSocket = (token) => {
     // Initialize SocketIO connection
@@ -141,8 +148,8 @@ function SharedConversation() {
   };
 
   return (
-    <div className={`mt-12 p-4 h-screen ${theme === 'light' ? 'bg-white' : theme === 'dark' ? 'bg-gray-900 text-white' : 'bg-blue-500 text-white'}`}>
-      <div className={`p-4 rounded-lg mb-4 overflow-y-auto ${theme === 'light' ? 'bg-gray-100' : theme === 'dark' ? 'bg-gray-900' : 'bg-indigo-400'}`}>
+    <div className={`flex flex-col h-screen ${theme === 'light' ? 'bg-white' : theme === 'dark' ? 'bg-gray-900 text-white' : 'bg-blue-500 text-white'}`}>
+      <div className="flex-grow overflow-y-auto p-4">
         {loading ? (
           <p className="text-center">Loading messages...</p>
         ) : messages.length === 0 ? (
@@ -158,7 +165,7 @@ function SharedConversation() {
           ))
         )}
       </div>
-      <div className="flex space-x-4">
+      <div className="p-4 border-t border-gray-300 flex space-x-4">
         <input 
           type="text" 
           value={newMessage}

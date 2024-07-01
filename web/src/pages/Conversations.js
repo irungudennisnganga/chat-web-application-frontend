@@ -49,7 +49,7 @@ function Conversations({ user }) {
   };
 // localStorage.clear()
   return (
-    <div className={`container mx-auto px-4 py-8 mt-6 ${theme === 'light' ? 'text-black' : 'text-white'}`}>
+    <div className={`container mx-auto px-4 py-8 mt-12 ${theme === 'light' ? 'text-black' : 'text-white'}`}>
       <h1 className="text-2xl font-semibold mb-4">
         <ReactTyped
           className={`p-2 text-xl font-bold inline-block ${theme === 'light' ? 'text-cyan-500' : theme === 'dark' ? 'text-yellow-500' : 'text-yellow-500'}`}

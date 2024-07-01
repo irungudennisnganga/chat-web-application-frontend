@@ -33,8 +33,8 @@ const Login = () => {
         }
       });
 
-      console.log('Raw response:', response);
-      console.log('Response data:', response.data);
+      // console.log('Raw response:', response);
+      // console.log('Response data:', response.data);
 
       if (response.data && response.data.access_token) {
         localStorage.removeItem('jwt'); 

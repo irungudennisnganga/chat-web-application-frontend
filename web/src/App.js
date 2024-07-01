@@ -1,10 +1,6 @@
-import React, { useRef, useState, useEffect } from 'react';
-import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import {  Route, Routes, useNavigate } from 'react-router-dom';
 import './App.css';
-import search from './Assets/search.svg';
-import camera from './Assets/camera.svg';
-import threeDots from './Assets/three-dots-.svg';
-import Swal from 'sweetalert2';
 import OTPVerification from './pages/OTPVerification';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
@@ -13,62 +9,16 @@ import Conversations from './pages/Conversations';
 import AddConversation from './pages/AddConversation';
 import SharedConversation from './pages/SharedConversation';
 import NavBar from './components/NavBar';
+import {ThemeProvider}  from './pages/ThemeContext'; // Import ThemeProvider
+import Profile from './pages/Profile';
 
 function App() {
-  const videoRef = useRef(null);
-  const canvasRef = useRef(null);
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
-  const [showCaptureButton, setShowCaptureButton] = useState(false);
-  const [capturedImage, setCapturedImage] = useState(null);
-
-  const openCamera = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      const video = videoRef.current;
-      video.srcObject = stream;
-      video.autoplay = true;
-      setShowCaptureButton(true); // Show the capture button
-      Swal.fire({
-        title: 'Success!',
-        text: 'Do you want to continue?',
-        icon: 'success',
-        confirmButtonText: 'Cool'
-      });
-    } catch (error) {
-      // Add a notification for the user
-      console.error('Error accessing the camera: ', error);
-      Swal.fire({
-        title: 'Error!',
-        text: 'Could not open camera!',
-        icon: 'error',
-        confirmButtonText: 'Cool'
-      });
-    }
-  };
-
-  const captureImage = () => {
-    const video = videoRef.current;
-    const canvas = canvasRef.current;
-    const context = canvas.getContext('2d');
-
-    // Set canvas dimensions to match video stream
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-
-    // Draw current frame from video onto canvas
-    context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-    // Convert canvas data to image data URL
-    const imageDataURL = canvas.toDataURL('image/png');
-
-    // Set the captured image in state
-    setCapturedImage(imageDataURL);
-  };
+  const [user, setUser] = useState(null); // State to store current user
+  const [selectedUser, setSelectedUser] = useState(null); // State to store selected user from conversation click
+  const jwt = localStorage.getItem('jwt');
 
   useEffect(() => {
-    const jwt = localStorage.getItem('jwt');
-    // console.log(jwt)
     if (jwt) {
       fetch('http://127.0.0.1:5555/check_session', {
         method: 'GET',
@@ -78,49 +28,53 @@ function App() {
       })
         .then(response => {
           if (response.ok) {
-            // console.log(response)
             return response.json();
           } else {
-            
             return response.text().then(text => { throw new Error(text) });
           }
         })
         .then(userData => {
           setUser(userData);
+          const currentPath = window.location.pathname;
+          if (currentPath === '/login' || currentPath === '/signup' || currentPath.startsWith('/otp-verification')) {
+            localStorage.removeItem('jwt'); // Clear JWT for login, signup, or otp verification
+          } else {
+            // localStorage.setItem('user', JSON.stringify(userData)); // Save user data in local storage for other paths
+          }
         })
         .catch(error => {
           console.error('Error checking session:', error);
           localStorage.removeItem('jwt');  // Clear JWT as the session is no longer valid
           navigate('/login');
           setUser(null);  // Clear user state
-          
         });
+    } else {
+      navigate('/login'); // If no JWT found, redirect to login page
     }
-  }, [navigate]);
-  // console.log(user)
-  return (
-    <>
-      {/* <div className="App bg-green-500 ">
-        <h1 className="text-3l font-bold padding-top: 0.25rem text-gray-200">CHAT COMMUNITY</h1>
-        
-        <img className='search' src={search} alt='search'/>
-        <img className='camera' src={camera} alt='camera' onClick={openCamera} />
-        <img className='dots' src={threeDots} alt='three dots'/>
+  }, [navigate]); // Include navigate in dependency array to suppress React warnings
 
-        
-      </div> */}
-      {user ?  <NavBar  user={user}/>:null}
-     console.log()
-      <Routes>
-        <Route exact path="/login" element={<Login />} />
-        <Route path="/otp-verification/:phoneNumber" element={<OTPVerification />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/conversations" element={<Conversations user={user} />} />
-        <Route path="/add-conversations" element={<AddConversation user={user} />} />
-        <Route path="/conversations/:id" element={<SharedConversation users={user} />} />
-        <Route exact path="/" element={<Welcome />} />
-      </Routes>
-    </>
+  const handleConversationClick = (clickedUser) => {
+    setSelectedUser(clickedUser); // Update selected user state
+    navigate(`/conversations/${clickedUser.user_id}`);
+  };
+
+  return (
+    <ThemeProvider>
+      <>
+        {user ? <NavBar user={selectedUser || user} /> : null} 
+        <Routes>
+          <Route exact path="/login" element={<Login />} />
+          <Route exact path="/profile" element={<Profile />} />
+          <Route path="/otp-verification/:phoneNumber" element={<OTPVerification />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/conversations" element={<Conversations user={user} onConversationClick={handleConversationClick} />} />
+          <Route path="/add-conversations" element={<AddConversation user={user} />} />
+          
+          <Route path="/conversations/:id" element={<SharedConversation users={user} />} />
+          <Route exact path="/" element={<Welcome />} />
+        </Routes>
+      </>
+    </ThemeProvider>
   );
 }
 
