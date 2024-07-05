@@ -92,7 +92,7 @@ const Navbar = ({ user: propUser }) => {
         />
         <div>
           <p className="text-lg font-semibold">{user.username}</p>
-          <p className="font-thin">{user.email}</p>
+          {/* <p className="font-thin">{user.email}</p> */}
         </div>
       </div>
       <div className="flex space-x-4 items-center">
@@ -100,15 +100,15 @@ const Navbar = ({ user: propUser }) => {
           to="/conversations" 
           onClick={() => localStorage.removeItem('user')}
           className={({ isActive }) => 
-            `p-2 rounded font-serif ${isActive ? 
-              (theme === 'light' ? 'bg-black text-white' : theme === 'dark' ? 'bg-white text-black' : 'bg-green-500 text-black') : 
+            `p-2 rounded font-serif hover:bg-black hover:text-white ${isActive ? 
+              (theme === 'light' ? 'bg-black text-white' : theme === 'dark' ? 'bg-white text-black hover:bg-black hover:text-white ' : 'bg-green-500 text-black') : 
               'hover:bg-gray-200'}`}>
           Chats
         </NavLink>
-        <button onClick={goBack} className="p-2 rounded-full hover:bg-gray-200">
+        <button onClick={goBack} className="p-2 rounded-full hover:text-black hover:bg-gray-200">
           <FaArrowLeft />
         </button>
-        <button onClick={goForward} className="p-2 rounded-full hover:bg-gray-200">
+        <button onClick={goForward} className="p-2 rounded-full hover:text-black hover:bg-gray-200">
           <FaArrowRight />
         </button>
         <div className="relative">
