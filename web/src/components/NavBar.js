@@ -2,14 +2,14 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { FaArrowLeft, FaArrowRight, FaSun, FaMoon, FaPalette } from 'react-icons/fa';
 import threeDots from '../Assets/three-dots-.svg';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, NavLink } from 'react-router-dom';
 
 const Navbar = ({ user: propUser }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(propUser);
 
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem('user'));
@@ -33,7 +33,7 @@ const Navbar = ({ user: propUser }) => {
 
   const handleProfile = () => {
     localStorage.removeItem('user');
-    navigate('/profile');
+    navigate('/Profile');
   };
 
   const toggleDropdown = (e) => {
@@ -79,7 +79,6 @@ const Navbar = ({ user: propUser }) => {
   };
 
   if (!user || !shouldDisplayNavbar()) {
-    
     return null; // Return null if user is not loaded or Navbar should not be displayed
   }
 
@@ -93,48 +92,57 @@ const Navbar = ({ user: propUser }) => {
         />
         <div>
           <p className="text-lg font-semibold">{user.username}</p>
-          <p className="text-sm">{user.email}</p>
+          {/* <p className="font-thin">{user.email}</p> */}
         </div>
       </div>
       <div className="flex space-x-4 items-center">
-        <button onClick={goBack} className="p-2 rounded-full hover:bg-gray-200">
+        <NavLink 
+          to="/conversations" 
+          onClick={() => localStorage.removeItem('user')}
+          className={({ isActive }) => 
+            `p-2 rounded font-serif hover:bg-black hover:text-white ${isActive ? 
+              (theme === 'light' ? 'bg-black text-white' : theme === 'dark' ? 'bg-white text-black hover:bg-black hover:text-white ' : 'bg-green-500 text-black') : 
+              'hover:bg-gray-200'}`}>
+          Chats
+        </NavLink>
+        <button onClick={goBack} className="p-2 rounded-full hover:text-black hover:bg-gray-200">
           <FaArrowLeft />
         </button>
-        <button onClick={goForward} className="p-2 rounded-full hover:bg-gray-200">
+        <button onClick={goForward} className="p-2 rounded-full hover:text-black hover:bg-gray-200">
           <FaArrowRight />
         </button>
         <div className="relative">
           <img src={threeDots} alt="three dots" onClick={toggleDropdown} className="cursor-pointer" />
           {dropdownVisible && (
-            <div className="absolute right-0 mt-2 w-48 bg-white border rounded shadow-lg z-50">
+            <div className={`absolute right-0 mt-2 w-48 ${theme === 'light' ? 'bg-white text-black' : 'bg-gray-700 text-white'} border rounded shadow-lg z-50`}>
               <button
                 onClick={handleProfile}
-                className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-200"
+                className={`block w-full text-left px-4 py-2 ${theme === 'light' ? 'text-gray-700 hover:bg-gray-200' : 'text-white hover:bg-gray-600'}`}
               >
                 Profile
               </button>
               <button
                 onClick={handleLogout}
-                className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-200"
+                className={`block w-full text-left px-4 py-2 ${theme === 'light' ? 'text-gray-700 hover:bg-gray-200' : 'text-white hover:bg-gray-600'}`}
               >
                 Logout
               </button>
               <div className="border-t my-2"></div>
               <button
                 onClick={() => switchTheme('light')}
-                className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-200 flex items-center"
+                className={`block w-full text-left px-4 py-2 flex items-center ${theme === 'light' ? 'text-gray-700 hover:bg-gray-200' : 'text-white hover:bg-gray-600'}`}
               >
                 <FaSun className="mr-2" /> Light Mode
               </button>
               <button
                 onClick={() => switchTheme('dark')}
-                className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-200 flex items-center"
+                className={`block w-full text-left px-4 py-2 flex items-center ${theme === 'light' ? 'text-gray-700 hover:bg-gray-200' : 'text-white hover:bg-gray-600'}`}
               >
                 <FaMoon className="mr-2" /> Dark Mode
               </button>
               <button
                 onClick={() => switchTheme('blue')}
-                className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-200 flex items-center"
+                className={`block w-full text-left px-4 py-2 flex items-center ${theme === 'light' ? 'text-gray-700 hover:bg-gray-200' : 'text-white hover:bg-gray-600'}`}
               >
                 <FaPalette className="mr-2" /> Blue Mode
               </button>

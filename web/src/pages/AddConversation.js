@@ -52,7 +52,7 @@ function AddConversation({ user }) {
   };
 
   return (
-    <div className="container mx-auto p-4 mt-12">
+    <div className="container mx-auto p-4 mt-16">
       <h1 className="text-2xl font-bold mb-4">
         <ReactTyped
           className={`p-2 text-xl font-bold inline-block ${theme === 'light' ? 'text-cyan-500' : theme === 'dark' ? 'text-yellow-500' : 'text-yellow-500'}`}
