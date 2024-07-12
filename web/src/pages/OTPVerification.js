@@ -2,6 +2,8 @@ import React, { useState, useRef } from 'react';
 import axios from 'axios';
 import './OTPverification.css';
 import { useNavigate, useParams } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
+import Navbar from '../components/NavBar';
 
 const OTPVerification = () => {
   const [otpDigits, setOTP] = useState(['', '', '', '', '', '']);
@@ -9,6 +11,8 @@ const OTPVerification = () => {
   const navigate = useNavigate();
   const { phoneNumber } = useParams();
   const inputRefs = useRef([]);
+  const notify = () => toast("OTP Verification Done✅.Continue To Login");
+  const notify2 = () => toast("Wrong OTP❌");
 
   const handleChange = (index, value) => {
     if (value.length > 1) {
@@ -31,11 +35,22 @@ const OTPVerification = () => {
     try {
       const response = await axios.post('http://127.0.0.1:5555/verify_otp', { phone_number: phoneNumber, otp });
       // check the response status before navigating
+
+      // console.log(response.status)
+      if(response.status===200){
+        notify()
+        setTimeout(() => {
+          navigate('/login');
+        }, 2000);  
+      }
       setMessage("Successfull");
-      navigate('/login');
+      
       
     } catch (error) {
-      console.error('Error verifying OTP:', error);
+      // console.error('Error verifying OTP:', error.response.status);
+      if(error.response.status===400){
+        notify2()
+      }
       setMessage('Error verifying OTP. Please try again.');
     }
   };
@@ -61,6 +76,8 @@ const OTPVerification = () => {
 
   return (
     <form className="form ml-auto mr-auto mt-16 h-screen">
+       <ToastContainer />
+       <Navbar />
       <span className="close">X</span>
 
       <div className="info">

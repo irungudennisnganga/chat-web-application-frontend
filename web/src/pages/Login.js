@@ -4,10 +4,11 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import Navbar from '../components/NavBar';
 
 const Login = () => {
-  const notify = () => toast("Login successful 👌");
-  const notify2 = () => toast("Login Request Not successful");
+  const notify = () => toast("Login Successful 🥳");
+  const notify2 = () => toast("Login Request Not Successful 🔐");
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -44,7 +45,7 @@ const Login = () => {
         notify();
         setTimeout(() => {
           navigate('/conversations');
-        }, 2000);  // Delay navigation to ensure the toast is visible
+        }, 3000);  // Delay navigation to ensure the toast is visible
       } else {
         setMessage('Login failed. Please try again.');
         
@@ -58,9 +59,12 @@ const Login = () => {
   };
 
   return (
-    <div className="login-box">
+    <>
       <ToastContainer />
-      <p>Login</p>
+      <Navbar />
+    <div className="login-box">
+    
+      <p className='mb-2'>Login◉</p>
       <form onSubmit={handleLogin}>
         <div className="user-box">
           <input
@@ -69,6 +73,7 @@ const Login = () => {
             type="email"
             value={formData.email}
             onChange={handleChange}
+            className='text-green-500'
           />
           <label>Email</label>
         </div>
@@ -79,6 +84,7 @@ const Login = () => {
             type="password"
             value={formData.password}
             onChange={handleChange}
+            className='text-green-500'
           />
           <label>Password</label>
         </div>
@@ -89,10 +95,14 @@ const Login = () => {
           <span></span>
           Submit
         </button>
-        {message && <h1 className='text-white mt-4 mb-4'>{message}</h1>}
+        {message && <h1 className='text-red-500 mt-4 mb-4'>{message}</h1>}
       </form>
-      <p>Don't have an account? <a href="signup" className="a2 sign text-cyan-400">Sign up!</a></p>
+      <p className='mb-2'>Don't have an account? <a href="signup" className="a2 sign text-cyan-400 ">Sign up!</a></p>
+
+      <p>
+        <a href='fogotten-password' className='sign'>Fogotten password !</a> </p>
     </div>
+    </>
   );
 };
 

@@ -11,6 +11,8 @@ const Navbar = ({ user: propUser }) => {
   const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
   const [user, setUser] = useState(propUser);
 
+  const currentPath = location.pathname;
+
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem('user'));
     if (storedUser) {
@@ -74,81 +76,94 @@ const Navbar = ({ user: propUser }) => {
 
   // Determine if Navbar should be displayed based on current location
   const shouldDisplayNavbar = () => {
-    const currentPath = location.pathname;
+    
     return !(currentPath === '/login' || currentPath === '/signup' || currentPath.startsWith('/otp-verification') || currentPath === '/' );
   };
-
-  if (!user || !shouldDisplayNavbar()) {
-    return null; // Return null if user is not loaded or Navbar should not be displayed
-  }
 
   return (
     <nav className={`fixed top-0 left-0 right-0 p-4 flex items-center justify-between shadow-md ${theme === 'light' ? 'bg-white text-black' : theme === 'dark' ? 'bg-gray-900 text-white' : 'bg-blue-500 text-white'}`}>
       <div className="flex items-center">
-        <img
-          src={user.profile_picture || 'https://images.pexels.com/photos/163036/mario-luigi-yoschi-figures-163036.jpeg?auto=compress&cs=tinysrgb&w=600'}
-          alt={user.username}
-          className="w-10 h-10 rounded-full mr-4"
-        />
-        <div>
-          <p className="text-lg font-semibold">{user.username}</p>
-          {/* <p className="font-thin">{user.email}</p> */}
-        </div>
+        {user ? (
+          <>
+            <img
+              src={user.profile_picture || 'https://images.pexels.com/photos/163036/mario-luigi-yoschi-figures-163036.jpeg?auto=compress&cs=tinysrgb&w=600'}
+              alt={user.username}
+              className="w-10 h-10 rounded-full mr-4"
+            />
+            <div>
+              <p className="text-lg font-semibold">{user.username}</p>
+              {/* <p className="font-thin">{user.email}</p> */}
+            </div>
+          </>
+        ) : (
+          <NavLink to="/" className="text-lg font-semibold"><FaArrowLeft /></NavLink>
+        )}
       </div>
       <div className="flex space-x-4 items-center">
-        <NavLink 
-          to="/conversations" 
-          onClick={() => localStorage.removeItem('user')}
-          className={({ isActive }) => 
-            `p-2 rounded font-serif hover:bg-black hover:text-white ${isActive ? 
-              (theme === 'light' ? 'bg-black text-white' : theme === 'dark' ? 'bg-white text-black hover:bg-black hover:text-white ' : 'bg-green-500 text-black') : 
-              'hover:bg-gray-200'}`}>
-          Chats
-        </NavLink>
-        <button onClick={goBack} className="p-2 rounded-full hover:text-black hover:bg-gray-200">
-          <FaArrowLeft />
-        </button>
-        <button onClick={goForward} className="p-2 rounded-full hover:text-black hover:bg-gray-200">
-          <FaArrowRight />
-        </button>
-        <div className="relative">
-          <img src={threeDots} alt="three dots" onClick={toggleDropdown} className="cursor-pointer" />
-          {dropdownVisible && (
-            <div className={`absolute right-0 mt-2 w-48 ${theme === 'light' ? 'bg-white text-black' : 'bg-gray-700 text-white'} border rounded shadow-lg z-50`}>
-              <button
-                onClick={handleProfile}
-                className={`block w-full text-left px-4 py-2 ${theme === 'light' ? 'text-gray-700 hover:bg-gray-200' : 'text-white hover:bg-gray-600'}`}
-              >
-                Profile
-              </button>
-              <button
-                onClick={handleLogout}
-                className={`block w-full text-left px-4 py-2 ${theme === 'light' ? 'text-gray-700 hover:bg-gray-200' : 'text-white hover:bg-gray-600'}`}
-              >
-                Logout
-              </button>
-              <div className="border-t my-2"></div>
-              <button
-                onClick={() => switchTheme('light')}
-                className={`block w-full text-left px-4 py-2 flex items-center ${theme === 'light' ? 'text-gray-700 hover:bg-gray-200' : 'text-white hover:bg-gray-600'}`}
-              >
-                <FaSun className="mr-2" /> Light Mode
-              </button>
-              <button
-                onClick={() => switchTheme('dark')}
-                className={`block w-full text-left px-4 py-2 flex items-center ${theme === 'light' ? 'text-gray-700 hover:bg-gray-200' : 'text-white hover:bg-gray-600'}`}
-              >
-                <FaMoon className="mr-2" /> Dark Mode
-              </button>
-              <button
-                onClick={() => switchTheme('blue')}
-                className={`block w-full text-left px-4 py-2 flex items-center ${theme === 'light' ? 'text-gray-700 hover:bg-gray-200' : 'text-white hover:bg-gray-600'}`}
-              >
-                <FaPalette className="mr-2" /> Blue Mode
-              </button>
+        {user ? (
+          <>
+            <NavLink 
+              to="/conversations" 
+              onClick={() => localStorage.removeItem('user')}
+              className={({ isActive }) => 
+                `p-2 rounded font-serif hover:bg-black hover:text-white ${isActive ? 
+                  (theme === 'light' ? 'bg-black text-white' : theme === 'dark' ? 'bg-white text-black hover:bg-black hover:text-white ' : 'bg-green-500 text-black') : 
+                  'hover:bg-gray-200'}`}>
+              Chats
+            </NavLink>
+            <button onClick={goBack} className="p-2 rounded-full hover:text-black hover:bg-gray-200">
+              <FaArrowLeft />
+            </button>
+            <button onClick={goForward} className="p-2 rounded-full hover:text-black hover:bg-gray-200">
+              <FaArrowRight />
+            </button>
+            <div className="relative">
+              <img src={threeDots} alt="three dots" onClick={toggleDropdown} className="cursor-pointer" />
+              {dropdownVisible && (
+                <div className={`absolute right-0 mt-2 w-48 ${theme === 'light' ? 'bg-white text-black' : 'bg-gray-700 text-white'} border rounded shadow-lg z-50`}>
+                  <button
+                    onClick={handleProfile}
+                    className={`block w-full text-left px-4 py-2 ${theme === 'light' ? 'text-gray-700 hover:bg-gray-200' : 'text-white hover:bg-gray-600'}`}
+                  >
+                    Profile
+                  </button>
+                  <button
+                    onClick={handleLogout}
+                    className={`block w-full text-left px-4 py-2 ${theme === 'light' ? 'text-gray-700 hover:bg-gray-200' : 'text-white hover:bg-gray-600'}`}
+                  >
+                    Logout
+                  </button>
+                  <div className="border-t my-2 "></div>
+                  <button
+                    onClick={() => switchTheme('light')}
+                    className={`block w-full text-left px-4 py-2 flex items-center ${theme === 'light' ? 'text-gray-700 hover:bg-gray-200' : 'text-white hover:bg-gray-600'}`}
+                  >
+                    <FaSun className="mr-2" /> Light Mode
+                  </button>
+                  <button
+                    onClick={() => switchTheme('dark')}
+                    className={`block w-full text-left px-4 py-2 flex items-center ${theme === 'light' ? 'text-gray-700 hover:bg-gray-200' : 'text-white hover:bg-gray-600'}`}
+                  >
+                    <FaMoon className="mr-2" /> Dark Mode
+                  </button>
+                  <button
+                    onClick={() => switchTheme('blue')}
+                    className={`block w-full text-left px-4 py-2 flex items-center ${theme === 'light' ? 'text-gray-700 hover:bg-gray-200' : 'text-white hover:bg-gray-600'}`}
+                  >
+                    <FaPalette className="mr-2" /> Blue Mode
+                  </button>
+                </div>
+              )}
             </div>
-          )}
-        </div>
+          </>
+        ) : (
+          <NavLink 
+            to={currentPath === '/login' ? '/signup' : '/login'} 
+            className="text-lg font-semibold text-green-500"
+          >
+            {currentPath === '/login' ? 'Sign Up' : 'Login'}
+          </NavLink>
+        )}
       </div>
     </nav>
   );

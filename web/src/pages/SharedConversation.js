@@ -17,6 +17,7 @@ function SharedConversation() {
   const [initialMessageLength, setInitialMessageLength] = useState();
   const messagesEndRef = useRef(null);
   const [showScrollToBottom, setShowScrollToBottom] = useState(false);
+  const [scroll, setscroll] = useState(false);
 
   useEffect(() => {
     const jwt = localStorage.getItem('jwt');
@@ -201,20 +202,28 @@ function SharedConversation() {
   };
 
   const scrollToBottom = () => {
-
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    // return <div ref={messagesEndRef}></div> 
+    window.scrollTo({
+      bottom: document.documentElement.scrollHeight,
+      behavior: 'smooth'
+    });
   };
 
   const handleScroll = (event) => {
     const { scrollTop, clientHeight, scrollHeight } = event.currentTarget;
+    
     if (scrollTop + clientHeight >= scrollHeight - 10) {
       setShowScrollToBottom(false);
     } else {
       setShowScrollToBottom(true);
     }
   };
-
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+// console.log(scroll)
   return (
     <div className={`flex flex-col h-screen  ${theme === 'light' ? 'bg-white' : theme === 'dark' ? 'bg-gray-900 text-white' : 'bg-blue-500 text-white'}`}>
       <div className="flex-grow overflow-y-auto p-4 mt-16" onScroll={handleScroll}>
@@ -233,7 +242,7 @@ function SharedConversation() {
           ))
         )}
         { !showScrollToBottom && <div ref={messagesEndRef}></div>}
-        {/* { !showScrollToBottom && <div ref={messagesEndRef}></div>} */}
+       { scroll && <div ref={messagesEndRef}></div>}
       </div>
       {showScrollToBottom && (
         <button
@@ -258,21 +267,21 @@ function SharedConversation() {
           className="hidden" 
           id="fileInput"
         />
-        <label htmlFor="fileInput" className={`cursor-pointer p-2 rounded ${theme === 'light' ? 'bg-gray-200' : theme === 'dark' ? 'bg-gray-700' : 'bg-blue-400'}`}>
+        {/* <label htmlFor="fileInput" className={`cursor-pointer p-2 rounded ${theme === 'light' ? 'bg-gray-200' : theme === 'dark' ? 'bg-gray-700' : 'bg-blue-400'}`}>
           <FaImage />
-        </label>
+        </label> */}
         <button 
           onClick={handleSendMessage}
           className={`p-2 rounded font-bold ${theme === 'light' ? 'bg-blue-500 text-white' : theme === 'dark' ? 'bg-blue-700 text-white' : 'bg-blue-400 text-white'}`}
         >
           Send
         </button>
-        <button 
+        {/* <button 
           onClick={handleSendFile}
           className={`p-2 rounded font-bold ${theme === 'light' ? 'bg-green-500 text-white' : theme === 'dark' ? 'bg-green-700 text-white' : 'bg-green-400 text-white'}`}
         >
           Upload
-        </button>
+        </button> */}
       </div>
     </div>
   );

@@ -11,6 +11,7 @@ import SharedConversation from './pages/SharedConversation';
 import NavBar from './components/NavBar';
 import {ThemeProvider}  from './pages/ThemeContext'; // Import ThemeProvider
 import Profile from './pages/Profile';
+import ForgotPassword from './pages/FogottenPassword';
 
 function App() {
   const navigate = useNavigate();
@@ -48,9 +49,10 @@ function App() {
           navigate('/login');
           setUser(null);  // Clear user state
         });
-    } else {
-      navigate('/login'); // If no JWT found, redirect to login page
-    }
+    } 
+    // else {
+    //   // navigate('/login'); // If no JWT found, redirect to login page
+    // }
   }, [navigate]); // Include navigate in dependency array to suppress React warnings
 
   const handleConversationClick = (clickedUser) => {
@@ -69,6 +71,7 @@ function App() {
           <Route path="/signup" element={<Signup />} />
           <Route path="/conversations" element={<Conversations user={user} onConversationClick={handleConversationClick} />} />
           <Route path="/add-conversations" element={<AddConversation user={user} />} />
+          <Route path="/fogotten-password" element={<ForgotPassword />} />
           
           <Route path="/conversations/:id" element={<SharedConversation users={user} />} />
           <Route exact path="/" element={<Welcome />} />

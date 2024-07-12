@@ -61,54 +61,64 @@ function Conversations({ user }) {
       </h1>
       <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
         {conversations.map(conversation => (
-          <div key={conversation.id} className={`bg-white rounded-lg shadow-md p-4 cursor-pointer ${theme === 'light' ? 'hover:bg-gray-100' : 'hover:bg-green-300 text-white'}`} onClick={() => handleConversationClick(conversation)}>
-            <div className="mt-2">
+          <div key={conversation.id} className={`bg-white rounded-lg shadow-md p-4 cursor-pointer ${theme === 'light' ? 'hover:bg-gray-100' : 'hover:bg-green-300 '}`} onClick={() => handleConversationClick(conversation)}>
+            <div >
               {conversation.user_1.id !== conversation.user_2.id ? (
-                <>
+                <div className='flex justify-between'>
                   {conversation.user_1.id === user.user_id && (
                     <>
-                      <p className="text-gray-600">Username: {conversation.user_2.username}</p>
-                      <p className="text-gray-600">Email: {conversation.user_2.email}</p>
-                      <img
+                    <div className='flex-col'>
+                      <p className="text-gray-600 font-semibold mb-1">Username: {conversation.user_2.username}</p>
+                      <p className="text-gray-600 font-semibold ">{conversation.user_2.email}</p>
+                      
+                      
+                    </div>
+                    <img
                         src={conversation.user_2.profile_picture || 'https://images.pexels.com/photos/163036/mario-luigi-yoschi-figures-163036.jpeg?auto=compress&cs=tinysrgb&w=600'}
                         alt={conversation.user_2.username}
-                        className="w-10 h-10 rounded-full mr-4"
+                        className="w-14 h-14  rounded-full mr-6"
                       />
                     </>
                   )}
                   {conversation.user_2.id === user.user_id && (
                     <>
-                      <p className="text-gray-600">Username: {conversation.user_1.username}</p>
-                      <p className="text-gray-600">Email: {conversation.user_1.email}</p>
-                      <img
-                        src={conversation.user_1.profile_picture || 'https://images.pexels.com/photos/163036/mario-luigi-yoschi-figures-163036.jpeg?auto=compress&cs=tinysrgb&w=600'}
-                        alt={conversation.user_1.username}
-                        className="w-10 h-10 rounded-full mr-4"
-                      />
-                    </>
+                    <div className='flex-col'>
+                      <p className="text-gray-600 font-semibold mb-1">Username: {conversation.user_1.username}</p>
+                      <p className="text-gray-600 font-semibold">{conversation.user_1.email}</p>
+                      
+                    </div>
+                    <img
+                    src={conversation.user_1.profile_picture || 'https://images.pexels.com/photos/163036/mario-luigi-yoschi-figures-163036.jpeg?auto=compress&cs=tinysrgb&w=600'}
+                    alt={conversation.user_1.username}
+                    className="w-14 h-14 z-10 rounded-full mr-4"
+                  />
+                  </>
                   )}
-                </>
+                </div>
               ) : (
-                <>
-                  <p className="text-gray-600">Username: {conversation.user_1.username}</p>
-                  <p className="text-gray-600">Email: {conversation.user_1.email}</p>
+                <div className='flex justify-between'>
+                  <div className='flex-col'>
+                  <p className="text-gray-600 font-semibold mb-1">Username: {conversation.user_1.username}</p>
+                  <p className="text-gray-600 font-semibold">{conversation.user_1.email}</p>
+                  </div>
                   <img
                     src={conversation.user_1.profile_picture || 'https://images.pexels.com/photos/163036/mario-luigi-yoschi-figures-163036.jpeg?auto=compress&cs=tinysrgb&w=600'}
                     alt={conversation.user_1.username}
-                    className="w-10 h-10 rounded-full mr-4"
+                    className="w-14 h-14 rounded-full mr-4"
                   />
-                </>
+                </div>
               )}
             </div>
           </div>
         ))}
       </div>
       <button
-        className={`fixed bottom-6 right-6 p-4 rounded-full shadow-lg ${theme === 'light' ? 'bg-blue-500 text-white hover:bg-blue-700' : 'bg-gray-900 text-white hover:bg-gray-700'}`}
+        className={`fixed bottom-6 right-6 p-4 rounded-full shadow-lg button-animated ${theme === 'light' ? 'text-white hover:bg-blue-700' : 'bg-gray-900 text-white hover:bg-gray-700'}`}
         onClick={handleAddConversationClick}
       >
         <FaPlus size={24} />
       </button>
+      
     </div>
   );
 }
